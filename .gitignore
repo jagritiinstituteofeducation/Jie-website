@@ -1,0 +1,20 @@
+node_modules
+.next
+out
+.env
+.env*.local
+/media
+/private-uploads
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+.DS_Store
+
+# local SQLite test/preview databases (never commit)
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+# local logs
+*.log
+seed-*.txt
