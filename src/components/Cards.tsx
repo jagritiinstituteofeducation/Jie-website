@@ -116,3 +116,22 @@ export function FaqList({ items, flush }: { items: Pick<Faq, 'question' | 'answe
     </div>
   )
 }
+
+/** Team cards gliding slowly right-to-left in a seamless loop (CSS only; pauses on hover). */
+export function TeamMarquee({ people }: { people: Faculty[] }) {
+  if (!people.length) return null
+  // repeat the list so the strip is always wider than the screen, then double it for the loop
+  const base = people.length < 6 ? [...people, ...people] : people
+  const loop = [...base, ...base]
+  return (
+    <div className="team-marquee" aria-label="Our team">
+      <div className="tm-track" style={{ ['--tm-dur' as string]: `${base.length * 7}s` }}>
+        {loop.map((f, i) => (
+          <div className="tm-item" key={`${f.id}-${i}`} aria-hidden={i >= people.length || undefined}>
+            <FacultyCard f={f} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

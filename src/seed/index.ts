@@ -161,11 +161,29 @@ const ALBUM: Record<string, 'certification' | 'winners' | 'celebrations' | 'clas
   Celebrations: 'celebrations',
   'Classroom & Labs': 'classroom',
 }
+// Display order on the Gallery page: big moments first, then celebrations, then individual toppers.
+const GALLERY_ORDER = [
+  'Certification Day', 'All winners of JIE', 'Teachers & students', 'Career counselling',
+  '79th Independence Day', 'Independence Day', 'Teacher and students',
+  'Manish', 'Jafreen', 'Prince', 'Fiza Naaz', 'Anju', 'Ashika',
+]
+const galleryOrder = (title: string, fallback: number) => {
+  const i = GALLERY_ORDER.indexOf(title)
+  return i >= 0 ? i : 100 + fallback
+}
 for (const [i, g] of gallery.entries()) {
   const image = await upload(`gallery/${g.f.split('/').pop()}`, `${g.t} – ${g.d}`)
   await payload.create({
     collection: 'gallery',
-    data: { title: g.t, caption: g.d, album: ALBUM[g.a] ?? 'winners', image, isTopper: /position/i.test(g.d), order: i },
+    data: { title: g.t, caption: g.d, album: ALBUM[g.a] ?? 'winners', image, isTopper: /position/i.test(g.d), order: galleryOrder(g.t, i) },
+  })
+}
+
+{
+  const image = await upload('brand/hero-counselling-room.jpg', 'Career counselling session at the Jagriti Institute of Education centre')
+  await payload.create({
+    collection: 'gallery',
+    data: { title: 'Career counselling', caption: 'Counselling session at the Shakarpur centre', album: 'classroom', image, isTopper: false, order: galleryOrder('Career counselling', gallery.length) },
   })
 }
 

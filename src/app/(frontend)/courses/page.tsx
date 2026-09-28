@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
-import { getCourses } from '@/lib/cms'
+import { getCourses, getSettings } from '@/lib/cms'
+import { waHref } from '@/lib/contact'
 import { toLite } from '@/components/Cards'
-import { PageHero } from '@/components/Chrome'
 import { CoursesBrowser } from '@/components/Interactive'
 
 export const metadata: Metadata = {
@@ -10,16 +10,12 @@ export const metadata: Metadata = {
 }
 
 export default async function CoursesPage() {
-  const courses = await getCourses()
-  const skill = courses.filter((c) => c.type !== 'academic').length
+  const [courses, s] = await Promise.all([getCourses(), getSettings()])
   return (
-    <>
-      <PageHero
-        crumb="Courses"
-        title={<>Explore our <span className="hl">courses</span></>}
-        lead={`${skill} career and skill courses, plus academic programmes from 10th to Ph.D. Filter by what you want to learn.`}
-      />
-      <CoursesBrowser courses={courses.map(toLite)} />
-    </>
+    <CoursesBrowser
+      courses={courses.map(toLite)}
+      maxDiscount={s.scholarship?.maxDiscount ?? '50%'}
+      counselHref={waHref(s.mainNumber, 'Hi JIE, please help me choose the right course.')}
+    />
   )
 }

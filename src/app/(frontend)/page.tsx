@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { getCourses, getFaculty, getFaqs, getGallery, getSettings, getTestimonials } from '@/lib/cms'
 import { mediaAlt, mediaUrl } from '@/lib/cms-media'
 import { mapsEmbed, prettyPhone, telHref, waHref } from '@/lib/contact'
-import { FacultyCard, FaqList, TestimonialCard, toLite } from '@/components/Cards'
+import { FaqList, TeamMarquee, TestimonialCard, toLite } from '@/components/Cards'
 import { courseGroups } from '@/components/Chrome'
 import { EnquiryForm } from '@/components/Forms'
 import { Carousel, CountUp, CourseTabs, GalleryGrid, RotatingWords } from '@/components/Interactive'
@@ -271,9 +271,7 @@ export default async function HomePage() {
       <section className="blk">
         <div className="wrap">
           <div className="sec-head center"><span className="eyebrow">Meet the team</span><h2>Mentors and guides behind your progress</h2></div>
-          <div className="fac">
-            {faculty.map((f) => <FacultyCard key={f.id} f={f} />)}
-          </div>
+          <TeamMarquee people={faculty} />
         </div>
       </section>
 

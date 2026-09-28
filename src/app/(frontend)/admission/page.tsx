@@ -1,86 +1,214 @@
 import type { Metadata } from 'next'
-import { getCourses, getFaqs, getSettings } from '@/lib/cms'
+import Link from 'next/link'
+import { getCourses, getFaqs, getSettings, getTestimonials } from '@/lib/cms'
+import { mediaUrl } from '@/lib/cms-media'
 import { waHref } from '@/lib/contact'
 import { FaqList } from '@/components/Cards'
-import { courseGroups, PageHero } from '@/components/Chrome'
+import { courseGroups } from '@/components/Chrome'
 import { AdmissionForm } from '@/components/Forms'
 import { Icon } from '@/components/Icon'
 
 export const metadata: Metadata = { title: 'Admission', description: 'Apply online for admission to Jagriti Institute of Education.' }
 
+const STEPS = [
+  ['phone', 'Enquiry', 'Call, WhatsApp or apply online'],
+  ['users', 'Counselling & demo', 'Meet a counsellor, attend a free class'],
+  ['file', 'Admission form', 'Online or at the centre'],
+  ['upload', 'Documents', 'ID proof, photo, marksheet'],
+  ['award', 'Fee & batch', 'Pay and get your batch'],
+]
+
+const DOCS = [
+  ['file', 'Aadhaar card or any government ID'],
+  ['image', 'Two passport-size photographs'],
+  ['cap', 'Latest marksheet or qualification proof'],
+  ['award', 'Scholarship result (if any)'],
+]
+
+const PAY = [
+  ['rupee', 'Cash', 'At the centre'],
+  ['phone2', 'UPI', 'Any UPI app'],
+  ['cal', 'Instalments', 'On long-term courses'],
+]
+
 export default async function AdmissionPage() {
-  const [s, courses, faqs] = await Promise.all([getSettings(), getCourses(), getFaqs('admission')])
+  const [s, courses, faqs, tests] = await Promise.all([getSettings(), getCourses(), getFaqs('admission'), getTestimonials()])
+  const max = s.scholarship?.maxDiscount ?? '50%'
+  const faces = tests.filter((t) => mediaUrl(t.photo, 'thumbnail')).slice(0, 5)
+
   return (
     <>
-      <PageHero
-        crumb="Admission"
-        title={<>Admissions <span className="hl">open</span></>}
-        lead="New batches start every month. Choose a course, pick a batch, and apply online in four short steps."
-      >
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <span className="badge b-long"><Icon name="cal" size="sm" />Monthly batches</span>
-          <span className="badge b-short"><Icon name="clock" size="sm" />Morning · Afternoon · Evening</span>
-          <span className="badge b-gold"><Icon name="percent" size="sm" />Scholarship applies</span>
-        </div>
-      </PageHero>
+      {/* HERO */}
+      <div className="adhero">
+        <div className="wrap">
+          <div className="adhero-copy">
+            <div className="crumb">
+              <Link href="/">Home</Link> / <span>Admission</span>
+            </div>
+            <span className="h2o-pill">
+              <i />
+              Admissions open · New batches every month
+            </span>
+            <h1>
+              Your journey starts with <span className="grad-t">one simple form</span>
+            </h1>
+            <p className="adhero-lead">
+              Choose a course, pick a batch and apply online in four short steps. Our admissions desk confirms your seat and fee,
+              usually within one working day.
+            </p>
+            <div className="h2o-ctas">
+              <a className="btn btn-g" href="#apply">
+                Start application <Icon name="arrow" size="sm" />
+              </a>
+              <a className="btn btn-ghost" href={waHref(s.mainNumber, 'Hi JIE, I need help with my admission.')} target="_blank" rel="noopener">
+                <Icon name="wa" size="sm" />
+                Get help on WhatsApp
+              </a>
+            </div>
+            <div className="adhero-facts">
+              {[
+                ['clock', 'Takes about 3 minutes'],
+                ['upload', 'Upload documents online'],
+                ['percent', `Scholarship up to ${max} applies`],
+                ['cal', 'Instalments available'],
+              ].map(([i, t]) => (
+                <span key={t}>
+                  <Icon name={i} size="sm" />
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
 
+          <div className="adhero-vis" aria-hidden="true">
+            <div className="adhero-glow" />
+            <div className="appcard">
+              <div className="appcard-top">
+                <span className="dots"><i /><i /><i /></span>
+                <small>Online admission form</small>
+              </div>
+              <div className="appcard-body">
+                {[
+                  ['Personal details', 'done'],
+                  ['Course & batch', 'done'],
+                  ['Documents', 'active'],
+                  ['Review & submit', ''],
+                ].map(([label, state], i) => (
+                  <div key={label} className={`appstep ${state}`}>
+                    <span>{state === 'done' ? <Icon name="check" size="sm" /> : i + 1}</span>
+                    <b>{label}</b>
+                    {state === 'active' && <em>In progress</em>}
+                  </div>
+                ))}
+                <div className="appbar"><i /></div>
+                <div className="appfields">
+                  <div><small>Course</small><b>Full Stack Development</b></div>
+                  <div><small>Batch</small><b>Morning</b></div>
+                </div>
+              </div>
+            </div>
+            <div className="gchip ok-chip">
+              <span className="ic-bub ok"><Icon name="check" /></span>
+              <div><small>Application</small><b>Received!</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* PROCESS */}
       <section className="blk">
         <div className="wrap">
-          <div className="sec-head center"><span className="eyebrow">Admission process</span><h2>Five steps to your first class</h2></div>
-          <div className="proc">
-            {[
-              ['phone', 'Enquiry', 'Call, WhatsApp or apply online'],
-              ['users', 'Counselling & demo', 'Meet a counsellor, attend a free class'],
-              ['file', 'Admission form', 'Online or at the centre'],
-              ['upload', 'Documents', 'ID proof, photo, marksheet'],
-              ['cal', 'Fee & batch', 'Pay and get your batch'],
-            ].map(([i, t, p]) => (
-              <div className="st" key={t}><span className="ic-bub"><Icon name={i} /></span><b>{t}</b><small>{p}</small></div>
-            ))}
+          <div className="sec-head center">
+            <span className="eyebrow">Admission process</span>
+            <h2>Five steps to your first class</h2>
           </div>
+          <ol className="sflow">
+            {STEPS.map(([i, t, p], n) => (
+              <li key={t}>
+                <span className="sflow-n">
+                  <Icon name={i} />
+                  <em>{n + 1}</em>
+                </span>
+                <b>{t}</b>
+                <small>{p}</small>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="blk bg-lav2">
-        <div className="wrap adm-grid">
-          <div style={{ display: 'grid', gap: 26 }}>
-            <div style={{ display: 'grid', gap: 14 }}>
+      {/* APPLY */}
+      <section className="blk adapply" id="apply">
+        <div className="wrap adapply-grid">
+          <aside className="adapply-side">
+            <div className="adcard">
               <span className="eyebrow">Documents required</span>
-              <ul className="doclist">
-                <li><Icon name="file" />Aadhaar card or any government ID</li>
-                <li><Icon name="image" />Two passport-size photographs</li>
-                <li><Icon name="cap" />Latest marksheet or qualification proof</li>
-                <li><Icon name="award" />Scholarship result (if any)</li>
+              <ul className="adcheck">
+                {DOCS.map(([i, t]) => (
+                  <li key={t}>
+                    <span><Icon name={i} size="sm" /></span>
+                    {t}
+                  </li>
+                ))}
               </ul>
             </div>
-            <div style={{ display: 'grid', gap: 14 }}>
+            <div className="adcard">
               <span className="eyebrow">Fees &amp; payment</span>
-              <div className="pay">
-                <div><Icon name="rupee" style={{ color: 'var(--cyan)' }} /><b>Cash</b><small>At the centre</small></div>
-                <div><Icon name="phone2" style={{ color: 'var(--cyan)' }} /><b>UPI</b><small>Any UPI app</small></div>
-                <div><Icon name="cal" style={{ color: 'var(--cyan)' }} /><b>Instalments</b><small>On long-term courses</small></div>
+              <div className="adpay">
+                {PAY.map(([i, t, p]) => (
+                  <div key={t}>
+                    <Icon name={i} />
+                    <b>{t}</b>
+                    <small>{p}</small>
+                  </div>
+                ))}
               </div>
               <p className="note" style={{ margin: 0 }}>
                 Course fees vary by programme. Ask a counsellor on WhatsApp for the current fee and any scholarship you qualify for.
               </p>
             </div>
-            <div className="side-note">
-              <Icon name="wa" style={{ color: '#1FAF55' }} />
-              <span>
-                Need help with the form?{' '}
-                <a href={waHref(s.mainNumber)} target="_blank" rel="noopener"><b>Chat on WhatsApp</b></a>
-              </span>
-            </div>
-          </div>
-          <div className="form-card">
+            <a className="adhelp" href={waHref(s.mainNumber, 'Hi JIE, I need help with the admission form.')} target="_blank" rel="noopener">
+              <span><Icon name="wa" /></span>
+              <div>
+                <b>Need help with the form?</b>
+                <small>Chat with our admissions desk on WhatsApp</small>
+              </div>
+              <Icon name="arrow" size="sm" />
+            </a>
+          </aside>
+          <div className="form-card adform">
             <AdmissionForm groups={courseGroups(courses)} waNumber={s.mainNumber} />
           </div>
         </div>
       </section>
 
+      {/* TRUST BAND */}
+      {faces.length > 0 && (
+        <section className="blk adtrust">
+          <div className="wrap adtrust-in">
+            <div className="adtrust-faces">
+              {faces.map((t) => (
+                <img key={t.id} src={mediaUrl(t.photo, 'thumbnail')} alt={t.name} />
+              ))}
+            </div>
+            <div>
+              <h3>Join students like {faces.slice(0, 3).map((t) => t.name).join(', ')} and more</h3>
+              <p>Hands-on classes, supportive faculty and a certificate you can show. Your seat is one form away.</p>
+            </div>
+            <a className="btn btn-g" href="#apply">
+              Apply now <Icon name="arrow" size="sm" />
+            </a>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ */}
       <section className="blk">
         <div className="wrap">
-          <div className="sec-head center"><span className="eyebrow">FAQs</span><h2>Admission questions</h2></div>
+          <div className="sec-head center">
+            <span className="eyebrow">FAQs</span>
+            <h2>Admission questions</h2>
+          </div>
           <FaqList items={faqs} />
         </div>
       </section>

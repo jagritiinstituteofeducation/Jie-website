@@ -33,7 +33,11 @@ export function CourseTabs({ courses }: { courses: CourseLite[] }) {
   )
 }
 
-/* ---------------- Courses page: filters + search ---------------- */
+/* ---------------- Courses page: hero + filters + search ---------------- */
+const ACAD_ICON: Record<string, string> = { school: 'book', degree: 'cap', medical: 'med', edu: 'users', eng: 'gear', law: 'scale', lib: 'book', phd: 'award' }
+const ACAD_GROUPS = Object.entries(CATEGORIES)
+  .filter(([, v]) => v.group === 'academic')
+  .map(([k, v]) => ({ k, label: v.label, tone: v.tone, icon: ACAD_ICON[k] ?? 'cap' }))
 const SKILL_FILTERS: [string, string][] = [
   ['all', 'All'],
   ['long', 'Long Term'],
@@ -43,10 +47,20 @@ const SKILL_FILTERS: [string, string][] = [
     .filter(([, v]) => v.group === 'skill')
     .map(([k, v]) => [k, v.label] as [string, string]),
 ]
+const CAT_ICON: Record<string, string> = { dev: 'code', design: 'palette', acc: 'calc', mkt: 'mega', sec: 'shield', teach: 'smile', basic: 'monitor' }
 
-export function CoursesBrowser({ courses }: { courses: CourseLite[] }) {
+export function CoursesBrowser({
+  courses,
+  maxDiscount = '50%',
+  counselHref,
+}: {
+  courses: CourseLite[]
+  maxDiscount?: string
+  counselHref: string
+}) {
   const [filter, setFilter] = useState('all')
   const [q, setQ] = useState('')
+  const resultsRef = useRef<HTMLDivElement>(null)
   const skill = courses.filter((c) => c.type !== 'academic')
   const academic = courses.filter((c) => c.type === 'academic')
   const match = (c: CourseLite) =>
@@ -58,56 +72,162 @@ export function CoursesBrowser({ courses }: { courses: CourseLite[] }) {
   const acadList = skillFilter ? [] : academic.filter(match)
   const hideSkill = onlyAcademic || (q !== '' && skillList.length === 0 && acadList.length > 0)
   const hideAcad = !onlyAcademic && acadList.length === 0
+  const total = skillList.length + acadList.length
+
+  const cats = Object.entries(CATEGORIES)
+    .filter(([, v]) => v.group === 'skill')
+    .map(([k, v]) => ({ k, label: v.label, n: skill.filter((c) => c.category === k).length }))
+    .filter((c) => c.n > 0)
+  const spotlight = ['full-stack-development', 'digital-marketing', 'b-ed']
+    .map((s) => courses.find((c) => c.slug === s))
+    .filter((c): c is CourseLite => Boolean(c))
+  const jump = (k: string) => {
+    setFilter(k)
+    requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
 
   return (
     <>
-      <section className="blk" style={{ paddingTop: 44 }}>
+      {/* HERO */}
+      <div className="chero">
         <div className="wrap">
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: 30, alignItems: 'center' }}>
-            <div className="filters">
-              {SKILL_FILTERS.map(([k, label]) => (
-                <button key={k} type="button" aria-pressed={filter === k} onClick={() => setFilter(k)}>
-                  {label}
-                </button>
-              ))}
+          <div className="chero-copy">
+            <div className="crumb">
+              <a href="/">Home</a> / <span>Courses</span>
             </div>
-            <div className="fld" style={{ width: 'min(320px,100%)' }}>
+            <span className="h2o-pill">
+              <i />
+              Admissions open · New batches every month
+            </span>
+            <h1>
+              Find the <span className="grad-t">course</span> that fits your next step
+            </h1>
+            <p className="chero-lead">
+              {skill.length} career &amp; skill courses taught in our labs, plus admission guidance for {academic.length} academic
+              programmes from 10th to Ph.D.
+            </p>
+            <form
+              className="chero-search"
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault()
+                resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+            >
+              <Icon name="search" />
               <label htmlFor="cSearch" style={{ position: 'absolute', left: -9999 }}>
                 Search courses
               </label>
-              <div style={{ position: 'relative' }}>
-                <Icon name="search" size="sm" style={{ position: 'absolute', left: 14, top: 16, color: 'var(--muted)' }} />
-                <input
-                  id="cSearch"
-                  type="search"
-                  placeholder="Search courses, e.g. Tally, B.Ed"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  style={{ paddingLeft: 42, borderRadius: 999 }}
-                />
+              <input id="cSearch" type="search" placeholder="Try “Tally”, “Coding”, “B.Ed”…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <button className="btn btn-g btn-sm" type="submit">
+                Search
+              </button>
+            </form>
+            <div className="chero-cats">
+              {cats.map((c) => (
+                <button key={c.k} type="button" onClick={() => jump(c.k)}>
+                  <Icon name={CAT_ICON[c.k] ?? 'book'} size="sm" />
+                  {c.label}
+                  <em>{c.n}</em>
+                </button>
+              ))}
+              <button type="button" className="acad" onClick={() => jump('academic')}>
+                <Icon name="cap" size="sm" />
+                Academic (10th–Ph.D.)
+                <em>{academic.length}</em>
+              </button>
+            </div>
+          </div>
+
+          <div className="chero-vis" aria-hidden="true">
+            <div className="chero-glow" />
+            {spotlight.map((c, i) => (
+              <div key={c.slug} className={`mini m${i + 1}`}>
+                <div className={`mini-top ${CATEGORIES[c.category as keyof typeof CATEGORIES]?.tone ?? 't-dev'}`}>
+                  <span>
+                    <Icon name={c.icon ?? 'book'} />
+                  </span>
+                  <small>{c.type === 'academic' ? 'Academic' : c.type === 'long' ? 'Long Term' : 'Short Term'}</small>
+                </div>
+                <div className="mini-body">
+                  <b>{c.title}</b>
+                  <small>
+                    <Icon name="clock" size="sm" />
+                    {c.duration}
+                  </small>
+                </div>
+              </div>
+            ))}
+            <div className="gchip mini-chip">
+              <span className="ic-bub gold">
+                <Icon name="percent" />
+              </span>
+              <div>
+                <small>Scholarship</small>
+                <b>Up to {maxDiscount} off</b>
               </div>
             </div>
           </div>
-          {!hideSkill && (
-            <div>
-              <div className="sec-head" style={{ marginBottom: 18 }}>
-                <span className="eyebrow">Career &amp; skill courses</span>
-                <h2>Learn a job-ready skill at JIE</h2>
-              </div>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 18 }}>
-                Showing {skillList.length} of {skill.length} courses
-              </p>
-              <div className="grid-3">
-                {skillList.length ? (
-                  skillList.map((c) => <CourseCard key={c.slug} c={c} />)
-                ) : (
-                  <p style={{ color: 'var(--muted)' }}>No skill courses match “{q}”. Try another word, or ask a counsellor.</p>
-                )}
-              </div>
-            </div>
-          )}
         </div>
-      </section>
+        <div className="wrap chero-strip">
+          {[
+            ['award', 'Certificate with every course'],
+            ['monitor', 'Hands-on computer labs'],
+            ['users', 'Free demo class'],
+            ['percent', `Scholarship up to ${maxDiscount}`],
+          ].map(([i, t]) => (
+            <span key={t}>
+              <Icon name={i} size="sm" />
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* STICKY FILTER BAR */}
+      <div className="cbar" ref={resultsRef}>
+        <div className="wrap">
+          <div className="filters">
+            {SKILL_FILTERS.map(([k, label]) => (
+              <button key={k} type="button" aria-pressed={filter === k} onClick={() => setFilter(k)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <span className="cbar-count">
+            {total} {total === 1 ? 'result' : 'results'}
+            {(q || filter !== 'all') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQ('')
+                  setFilter('all')
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </span>
+        </div>
+      </div>
+
+      {!hideSkill && (
+        <section className="blk" style={{ paddingTop: 40 }}>
+          <div className="wrap">
+            <div className="sec-head" style={{ marginBottom: 24 }}>
+              <span className="eyebrow">Career &amp; skill courses</span>
+              <h2>Learn a job-ready skill at JIE</h2>
+            </div>
+            <div className="grid-3">
+              {skillList.length ? (
+                skillList.map((c) => <CourseCard key={c.slug} c={c} />)
+              ) : (
+                <p style={{ color: 'var(--muted)' }}>No skill courses match “{q}”. Try another word, or ask a counsellor.</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {!hideAcad && (
         <section className="blk bg-lav">
@@ -135,14 +255,26 @@ export function CoursesBrowser({ courses }: { courses: CourseLite[] }) {
                 </div>
               ))}
             </div>
-            <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 18 }}>
-              Showing {acadList.length} of {academic.length} programmes
-            </p>
-            <div className="grid-3">
-              {acadList.map((c) => (
-                <CourseCard key={c.slug} c={c} />
-              ))}
-            </div>
+            {ACAD_GROUPS.map(({ k, label, tone, icon }) => {
+              const list = acadList.filter((c) => c.category === k)
+              if (!list.length) return null
+              return (
+                <div className="acad-group" key={k}>
+                  <h3 className="acad-group-h">
+                    <span className={`dot ${tone}`}>
+                      <Icon name={icon} size="sm" />
+                    </span>
+                    {label}
+                    <em>{list.length}</em>
+                  </h3>
+                  <div className="grid-3">
+                    {list.map((c) => (
+                      <CourseCard key={c.slug} c={c} />
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
             <p className="note">
               Eligibility shown is the general norm. Final eligibility, fees, duration and mode depend on the board or university.
               Ask a counsellor for your case.
@@ -150,12 +282,56 @@ export function CoursesBrowser({ courses }: { courses: CourseLite[] }) {
           </div>
         </section>
       )}
+
+      {/* HELP BANNER */}
+      <section className="blk">
+        <div className="wrap">
+          <div className="banner help-banner">
+            <div>
+              <span className="badge">
+                <Icon name="users" size="sm" />
+                Free counselling
+              </span>
+              <h2>Not sure which course fits you?</h2>
+              <p>Tell us your goal. A counsellor will suggest the right course, batch and scholarship, usually within one working day.</p>
+            </div>
+            <div className="acts">
+              <a className="btn btn-wa" href={counselHref} target="_blank" rel="noopener">
+                <Icon name="wa" size="sm" />
+                Ask on WhatsApp
+              </a>
+              <a className="btn btn-w" href="/scholarship">
+                Take Scholarship Test <Icon name="arrow" size="sm" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }
 
-/* ---------------- Gallery (grid or preview) + lightbox ---------------- */
-export type GalleryItem = { id: string | number; title: string; caption?: string | null; album: string; thumb?: string; full?: string }
+/* ---------------- Gallery (bento grid or preview) + lightbox ---------------- */
+export type GalleryItem = {
+  id: string | number
+  title: string
+  caption?: string | null
+  album: string
+  thumb?: string
+  full?: string
+  w?: number | null
+  h?: number | null
+}
+
+/** Tile shape for the bento grid, from the photo's own proportions. */
+function tileShape(g: GalleryItem, i: number) {
+  if (i === 0) return 'big'
+  if (!g.w || !g.h) return ''
+  const r = g.w / g.h
+  if (r >= 1.2) return 'wide'
+  if (r <= 0.8) return 'tall'
+  return ''
+}
 
 export function GalleryGrid({
   items,
@@ -169,6 +345,11 @@ export function GalleryGrid({
   const [album, setAlbum] = useState('all')
   const [open, setOpen] = useState<number | null>(null)
   const list = useMemo(() => items.filter((g) => album === 'all' || g.album === album), [items, album])
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: items.length }
+    items.forEach((g) => (c[g.album] = (c[g.album] ?? 0) + 1))
+    return c
+  }, [items])
 
   useEffect(() => {
     if (open === null) return
@@ -185,22 +366,45 @@ export function GalleryGrid({
   return (
     <>
       {albums && (
-        <div className="filters" style={{ marginBottom: 30 }}>
-          {[{ label: 'All', value: 'all' }, ...albums].map((a) => (
-            <button key={a.value} type="button" aria-pressed={album === a.value} onClick={() => setAlbum(a.value)}>
-              {a.label}
-            </button>
-          ))}
+        <div className="gbar">
+          <div className="wrap">
+            <div className="filters">
+              {[{ label: 'All photos', value: 'all' }, ...albums]
+                .filter((a) => a.value === 'all' || counts[a.value])
+                .map((a) => (
+                  <button key={a.value} type="button" aria-pressed={album === a.value} onClick={() => setAlbum(a.value)}>
+                    {a.label}
+                    <em>{counts[a.value] ?? 0}</em>
+                  </button>
+                ))}
+            </div>
+          </div>
         </div>
       )}
-      <div className={variant === 'preview' ? 'gal-prev' : 'gal'}>
+      <div className={variant === 'preview' ? 'gal-prev' : 'bento wrap'}>
         {list.map((g, i) => (
-          <button key={g.id} type="button" className="gitem" onClick={() => setOpen(i)}>
-            {g.thumb ? <img src={g.thumb} alt={`${g.title}${g.caption ? ` – ${g.caption}` : ''}`} loading="lazy" /> : <div className="ph-fb"><Icon name="image" size="lg" /></div>}
+          <button
+            key={g.id}
+            type="button"
+            className={`gitem ${variant === 'full' ? tileShape(g, i) : ''}`}
+            onClick={() => setOpen(i)}
+          >
+            {g.thumb ? (
+              <img src={g.thumb} alt={`${g.title}${g.caption ? ` – ${g.caption}` : ''}`} loading={i < 4 ? 'eager' : 'lazy'} />
+            ) : (
+              <div className="ph-fb">
+                <Icon name="image" size="lg" />
+              </div>
+            )}
             <span className="cap">
               <b>{g.title}</b>
               {g.caption}
             </span>
+            {variant === 'full' && (
+              <span className="zoom" aria-hidden="true">
+                <Icon name="search" size="sm" />
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -215,6 +419,9 @@ export function GalleryGrid({
           <figure>
             <img src={current.full ?? current.thumb} alt={current.title} />
             <figcaption>
+              <span className="lb-count">
+                {open! + 1} / {list.length}
+              </span>
               <b>{current.title}</b>
               {current.caption ? ` · ${current.caption}` : ''}
             </figcaption>

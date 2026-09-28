@@ -893,6 +893,12 @@ export interface SiteSetting {
         }[]
       | null;
   };
+  about?: {
+    /**
+     * Photo of the centre shown behind the top of the About page (a dark overlay keeps the text readable).
+     */
+    heroBackground?: (number | null) | Media;
+  };
   director?: {
     name?: string | null;
     title?: string | null;
@@ -980,6 +986,11 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               word?: T;
               id?: T;
             };
+      };
+  about?:
+    | T
+    | {
+        heroBackground?: T;
       };
   director?:
     | T

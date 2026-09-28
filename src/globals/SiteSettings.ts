@@ -78,6 +78,19 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          label: 'About page',
+          name: 'about',
+          fields: [
+            {
+              name: 'heroBackground',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'About hero background photo',
+              admin: { description: 'Photo of the centre shown behind the top of the About page (a dark overlay keeps the text readable).' },
+            },
+          ],
+        },
+        {
           label: 'Director',
           name: 'director',
           fields: [
