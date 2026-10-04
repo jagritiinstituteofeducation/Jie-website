@@ -181,9 +181,9 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {d.message && (
-        <section className="blk bg-lav2">
-          <div className="wrap">
+      <section className="blk bg-lav2">
+        <div className="wrap">
+          {d.message && (
             <div className="msg">
               {mediaUrl(d.photo) ? (
                 <img className="av" src={mediaUrl(d.photo, 'thumbnail')} alt={mediaAlt(d.photo, d.name ?? '')} style={{ objectFit: 'cover', objectPosition: '50% 20%' }} />
@@ -200,9 +200,28 @@ export default async function AboutPage() {
                 </cite>
               </div>
             </div>
+          )}
+
+          {/* Chairman: Purnima Ma'am */}
+          <div className="msg msg-chair">
+            <img className="chair-photo" src="/team/purnima-maam.jpg" alt="Purnima Ma’am, Chairman of Jagriti Institute of Education" loading="lazy" />
+            <div>
+              <span className="eyebrow">Chairman’s message</span>
+              <blockquote style={{ marginTop: 12 }}>
+                At Jagriti Institute of Education, we specialise in high-quality computer education, with a wide range of IT courses
+                for beginners and advanced learners. Our expert instructors bring real-world insight, so students gain practical
+                skills in the latest technologies, software and programming languages. Whether you want to upgrade your skills or
+                start a new career, JIE is your trusted partner for professional growth.
+              </blockquote>
+              <cite>
+                <b>Purnima Ma’am</b>
+                <br />
+                Chairman, Jagriti Institute of Education
+              </cite>
+            </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* TEAM */}
       <section className="blk">

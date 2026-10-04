@@ -106,7 +106,10 @@ nav.main a.active,nav.main .dd.active>button{color:var(--blue);font-weight:600}
 .mega{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);width:600px;background:#fff;border-radius:var(--r-card);box-shadow:var(--sh-h);border:1px solid var(--border);padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
 .mega::before{content:"";position:absolute;top:-14px;left:0;right:0;height:14px}
 .dd:hover .mega,.dd:focus-within .mega,.dd.open .mega{opacity:1;visibility:visible}
-.mega.three{width:880px;grid-template-columns:1fr 1fr 1fr;transform:translateX(-38%)}
+.mega.three{width:min(1060px,calc(100vw - 64px));grid-template-columns:2fr 1fr 1fr;transform:translateX(-42%);max-height:calc(100vh - 120px);overflow-y:auto;overscroll-behavior:contain}
+.mega-col.academic{padding-right:24px;border-right:1px solid var(--border)}
+.mega-col.academic .mega-links{columns:2;column-gap:24px}
+.mega-links a{break-inside:avoid}
 .mega h5{margin:0 0 6px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--cyan)}
 .mega a{display:block;padding:6px 0;color:var(--strong);font-size:14.5px}
 .mega a:hover{color:var(--blue)}
@@ -1368,3 +1371,8 @@ nav.main .dd.active>.dd-btn{color:var(--blue);font-weight:600}
   .fcat-list{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){.fcat-panel{animation:none}.fcat-chev,.fcat-list li{transition:none}}
+
+/* About: Chairman message (below the Director message) */
+.msg-chair{margin-top:24px}
+.msg-chair .chair-photo{width:150px;height:190px;border-radius:22px;object-fit:cover;object-position:50% 30%;box-shadow:var(--sh)}
+@media (max-width:700px){.msg-chair{grid-template-columns:1fr;justify-items:start}.msg-chair .chair-photo{width:140px;height:178px}}

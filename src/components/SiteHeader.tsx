@@ -59,17 +59,19 @@ export function SiteHeader({ logoUrl, courses, callHref, waHref }: Props) {
                   </Link>
                   <div className="mega three" role="menu">
                     {[
+                      ['academic', 'Academic programmes'],
                       ['long', 'Long-term programmes'],
                       ['short', 'Short-term courses'],
-                      ['academic', 'Academic programmes'],
                     ].map(([t, h]) => (
-                      <div key={t}>
+                      <div key={t} className={`mega-col ${t}`}>
                         <h5>{h}</h5>
-                        {group(t).map((c) => (
-                          <Link key={c.slug} href={`/courses/${c.slug}`}>
-                            {c.title}
-                          </Link>
-                        ))}
+                        <div className="mega-links">
+                          {group(t).map((c) => (
+                            <Link key={c.slug} href={`/courses/${c.slug}`}>
+                              {c.title}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     ))}
                     <Link className="all link-arrow" href="/courses">
