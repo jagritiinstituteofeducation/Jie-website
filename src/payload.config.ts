@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media, Documents } from './collections/Media'
 import { Courses } from './collections/Courses'
+import { UniversityPrograms } from './collections/UniversityPrograms'
 import { Faculty, Testimonials, Gallery, Faqs } from './collections/Content'
 import { Enquiries, ScholarshipRegistrations, Admissions } from './collections/Leads'
 import { SiteSettings } from './globals/SiteSettings'
@@ -39,7 +40,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: ' | JIE Admin' },
   },
-  collections: [Courses, Faculty, Testimonials, Gallery, Faqs, Media, Enquiries, ScholarshipRegistrations, Admissions, Documents, Users],
+  collections: [Courses, UniversityPrograms, Faculty, Testimonials, Gallery, Faqs, Media, Enquiries, ScholarshipRegistrations, Admissions, Documents, Users],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },

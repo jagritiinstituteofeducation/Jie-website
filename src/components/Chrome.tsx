@@ -139,6 +139,9 @@ export function SiteFooter({ s, popular }: { s: SiteSetting; popular: Course[] }
             <Link href="/admission">Refund Policy</Link>
           </nav>
         </div>
+        <p className="fcredit">
+          Made with <span aria-hidden="true">♥</span> by <b>Aarti</b>
+        </p>
       </div>
     </footer>
   )

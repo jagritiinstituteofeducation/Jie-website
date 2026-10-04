@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 import { getPayload } from 'payload'
 import config from '../payload.config'
 import { academicPrograms, faqs, gallery, skillCourses, testimonials } from './data'
+import { universityPrograms } from './university'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const MEDIA = path.resolve(dirname, '../../seed-media')
@@ -143,6 +144,17 @@ for (const [i, a] of academicPrograms.entries()) {
       careers: a.car.map((title) => ({ title })),
       order: 100 + i,
     },
+  })
+}
+
+// ---------- full university catalogue ----------
+log(`Creating ${universityPrograms.length} university programmes…`)
+const allCourses = await payload.find({ collection: 'courses', limit: 200, depth: 0 })
+const courseIdBySlug = Object.fromEntries(allCourses.docs.map((c) => [c.slug, c.id]))
+for (const { existingSlug, ...p } of universityPrograms) {
+  await payload.create({
+    collection: 'university-programs',
+    data: { ...p, existingCourse: existingSlug ? courseIdBySlug[existingSlug] : undefined },
   })
 }
 

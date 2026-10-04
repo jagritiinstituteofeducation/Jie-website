@@ -45,4 +45,17 @@ export const getFaqs = cache(async (category: Faq['category']): Promise<Faq[]> =
   (await (await cms()).find({ collection: 'faqs', where: { category: { equals: category } }, sort: 'order', limit: 50 })).docs,
 )
 
+export const getUniversityPrograms = cache(async () =>
+  (
+    await (await cms()).find({
+      collection: 'university-programs',
+      where: { showOnWebsite: { equals: true } },
+      sort: 'order',
+      limit: 500,
+      depth: 0,
+      select: { faculty: true, name: true, specialization: true },
+    })
+  ).docs,
+)
+
 export { mediaAlt, mediaUrl } from './cms-media'

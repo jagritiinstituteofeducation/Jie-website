@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CATEGORIES } from '@/lib/options'
 import { CourseCard, type CourseLite } from './Cards'
+import { FullCatalogue, type UniProgram } from './FullCatalogue'
 import { Icon } from './Icon'
 
 /* ---------------- Home: Long / Short / Academic tabs ---------------- */
@@ -40,9 +41,9 @@ const ACAD_GROUPS = Object.entries(CATEGORIES)
   .map(([k, v]) => ({ k, label: v.label, tone: v.tone, icon: ACAD_ICON[k] ?? 'cap' }))
 const SKILL_FILTERS: [string, string][] = [
   ['all', 'All'],
+  ['academic', 'Academic Programmes'],
   ['long', 'Long Term'],
   ['short', 'Short Term'],
-  ['academic', 'Academic Programmes'],
   ...Object.entries(CATEGORIES)
     .filter(([, v]) => v.group === 'skill')
     .map(([k, v]) => [k, v.label] as [string, string]),
@@ -53,10 +54,12 @@ export function CoursesBrowser({
   courses,
   maxDiscount = '50%',
   counselHref,
+  programs = [],
 }: {
   courses: CourseLite[]
   maxDiscount?: string
   counselHref: string
+  programs?: UniProgram[]
 }) {
   const [filter, setFilter] = useState('all')
   const [q, setQ] = useState('')
@@ -78,7 +81,7 @@ export function CoursesBrowser({
     .filter(([, v]) => v.group === 'skill')
     .map(([k, v]) => ({ k, label: v.label, n: skill.filter((c) => c.category === k).length }))
     .filter((c) => c.n > 0)
-  const spotlight = ['full-stack-development', 'digital-marketing', 'b-ed']
+  const spotlight = ['b-ed', 'full-stack-development', 'digital-marketing']
     .map((s) => courses.find((c) => c.slug === s))
     .filter((c): c is CourseLite => Boolean(c))
   const jump = (k: string) => {
@@ -103,8 +106,8 @@ export function CoursesBrowser({
               Find the <span className="grad-t">course</span> that fits your next step
             </h1>
             <p className="chero-lead">
-              {skill.length} career &amp; skill courses taught in our labs, plus admission guidance for {academic.length} academic
-              programmes from 10th to Ph.D.
+              Admission guidance for {academic.length} academic programmes from 10th to Ph.D., plus {skill.length} career &amp; skill
+              courses taught in our labs.
             </p>
             <form
               className="chero-search"
@@ -118,12 +121,17 @@ export function CoursesBrowser({
               <label htmlFor="cSearch" style={{ position: 'absolute', left: -9999 }}>
                 Search courses
               </label>
-              <input id="cSearch" type="search" placeholder="Try “Tally”, “Coding”, “B.Ed”…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input id="cSearch" type="search" placeholder="Try “B.Ed”, “B.Tech”, “Tally”…" value={q} onChange={(e) => setQ(e.target.value)} />
               <button className="btn btn-g btn-sm" type="submit">
                 Search
               </button>
             </form>
             <div className="chero-cats">
+              <button type="button" className="acad" onClick={() => jump('academic')}>
+                <Icon name="cap" size="sm" />
+                Academic (10th–Ph.D.)
+                <em>{academic.length}</em>
+              </button>
               {cats.map((c) => (
                 <button key={c.k} type="button" onClick={() => jump(c.k)}>
                   <Icon name={CAT_ICON[c.k] ?? 'book'} size="sm" />
@@ -131,11 +139,6 @@ export function CoursesBrowser({
                   <em>{c.n}</em>
                 </button>
               ))}
-              <button type="button" className="acad" onClick={() => jump('academic')}>
-                <Icon name="cap" size="sm" />
-                Academic (10th–Ph.D.)
-                <em>{academic.length}</em>
-              </button>
             </div>
           </div>
 
@@ -211,26 +214,9 @@ export function CoursesBrowser({
         </div>
       </div>
 
-      {!hideSkill && (
-        <section className="blk" style={{ paddingTop: 40 }}>
-          <div className="wrap">
-            <div className="sec-head" style={{ marginBottom: 24 }}>
-              <span className="eyebrow">Career &amp; skill courses</span>
-              <h2>Learn a job-ready skill at JIE</h2>
-            </div>
-            <div className="grid-3">
-              {skillList.length ? (
-                skillList.map((c) => <CourseCard key={c.slug} c={c} />)
-              ) : (
-                <p style={{ color: 'var(--muted)' }}>No skill courses match “{q}”. Try another word, or ask a counsellor.</p>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
+      {/* ACADEMIC PROGRAMMES FIRST */}
       {!hideAcad && (
-        <section className="blk bg-lav">
+        <section className="blk bg-lav" style={{ paddingTop: 40 }}>
           <div className="wrap">
             <div className="sec-head">
               <span className="eyebrow">Academic &amp; university programmes</span>
@@ -282,6 +268,28 @@ export function CoursesBrowser({
           </div>
         </section>
       )}
+
+      {/* CAREER & SKILL COURSES (long / short term) */}
+      {!hideSkill && (
+        <section className="blk">
+          <div className="wrap">
+            <div className="sec-head" style={{ marginBottom: 24 }}>
+              <span className="eyebrow">Career &amp; skill courses</span>
+              <h2>Learn a job-ready skill at JIE</h2>
+            </div>
+            <div className="grid-3">
+              {skillList.length ? (
+                skillList.map((c) => <CourseCard key={c.slug} c={c} />)
+              ) : (
+                <p style={{ color: 'var(--muted)' }}>No skill courses match “{q}”. Try another word, or ask a counsellor.</p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FULL UNIVERSITY CATALOGUE (expand button) */}
+      <FullCatalogue programs={programs} />
 
       {/* HELP BANNER */}
       <section className="blk">

@@ -1320,3 +1320,51 @@ nav.main .dd.active>.dd-btn{color:var(--blue);font-weight:600}
 .cthours li{align-items:center}
 .cthours li b{white-space:nowrap;font-size:14px}
 .cthours li span{font-size:14px}
+
+/* footer credit */
+.fcredit{margin:0;padding:14px 0 22px;border-top:1px solid rgba(255,255,255,.08);text-align:center;font-size:13.5px;color:#9FB3CC;letter-spacing:.2px}
+.fcredit span{color:#FF6B8A;display:inline-block;animation:beat 1.6s ease-in-out infinite}
+.fcredit b{color:#fff;font-weight:600}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.fcredit span{animation:none}}
+
+/* ---------- Courses: full list of all courses & diplomas (expand button) ---------- */
+.fcat{padding-top:0}
+.fcat .wrap{scroll-margin-top:150px}
+.fcat-head{display:flex;align-items:center;justify-content:space-between;gap:20px 28px;flex-wrap:wrap;padding:26px 30px;border-radius:var(--r-card);background:linear-gradient(135deg,var(--lav-2) 0%,#fff 60%,var(--cyan-t) 100%);border:1px solid var(--border);box-shadow:var(--sh)}
+.fcat-head>div{display:grid;gap:8px}
+.fcat-head h2{font-size:clamp(22px,3vw,30px);color:var(--navy)}
+.fcat-toggle{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:10px 14px 10px 22px;border-radius:999px;border:0;background:var(--grad);color:#fff;font:600 15px/1.25 var(--font);cursor:pointer;box-shadow:0 10px 24px rgba(0,74,173,.25);transition:transform .2s ease-out,box-shadow .2s ease-out;text-align:left}
+.fcat-toggle:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,74,173,.32)}
+.fcat-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.fcat-chev{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;flex:none;transition:transform .25s ease-out}
+.fcat-toggle.on .fcat-chev{transform:rotate(180deg)}
+.fcat-panel{margin-top:26px;animation:fcatIn .35s ease-out}
+@keyframes fcatIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.fcat-tools{margin-bottom:14px}
+.fcat-search{display:flex;align-items:center;gap:10px;height:48px;max-width:560px;padding:0 16px;border:1.5px solid var(--border);border-radius:999px;background:#fff;color:var(--muted)}
+.fcat-search:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,74,173,.1)}
+.fcat-search input{flex:1;min-width:0;border:0;outline:0;font:400 15px var(--font);color:var(--strong);background:transparent}
+.fcat-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.fcat-chips button{border:1px solid var(--border);background:#fff;color:var(--navy);font:500 13px var(--font);border-radius:999px;padding:7px 13px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.fcat-chips button:hover{border-color:var(--blue);color:var(--blue)}
+.fcat-chips button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.fcat-group+.fcat-group{margin-top:30px}
+.fcat-group h3{display:flex;align-items:center;gap:12px;font-size:18px;color:var(--navy);margin-bottom:14px}
+.fcat-group h3 .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;background:var(--grad);flex:none}
+.fcat-group h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.fcat-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.fcat-list li{background:#fff;border:1px solid var(--border);border-left:4px solid var(--cyan);border-radius:14px;padding:14px 16px;transition:box-shadow .2s,transform .2s}
+.fcat-list li:hover{box-shadow:var(--sh);transform:translateY(-2px)}
+.fcat-list b{display:block;color:var(--navy);font-weight:600;font-size:15px;line-height:1.35}
+.fcat-list small{display:block;margin-top:6px;font-size:13.5px;line-height:1.55;color:var(--muted)}
+.fcat-list small span{font-weight:600;color:var(--blue)}
+.fcat-empty{text-align:center;padding:36px 16px;border:1px dashed var(--border);border-radius:16px;display:grid;gap:14px;justify-items:center;color:var(--muted)}
+.fcat-foot{display:flex;justify-content:center;margin-top:26px}
+.fcat-foot .fcat-toggle{padding-left:24px}
+@media (max-width:700px){
+  .fcat-head{padding:22px 18px}
+  .fcat-toggle{width:100%;justify-content:center}
+  .fcat-list{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.fcat-panel{animation:none}.fcat-chev,.fcat-list li{transition:none}}

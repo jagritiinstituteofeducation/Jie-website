@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     courses: Course;
+    'university-programs': UniversityProgram;
     faculty: Faculty;
     testimonials: Testimonial;
     gallery: Gallery;
@@ -86,6 +87,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     courses: CoursesSelect<false> | CoursesSelect<true>;
+    'university-programs': UniversityProgramsSelect<false> | UniversityProgramsSelect<true>;
     faculty: FacultySelect<false> | FacultySelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
@@ -296,6 +298,45 @@ export interface Media {
   };
 }
 /**
+ * The complete list of university courses & diplomas on the Courses page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "university-programs".
+ */
+export interface UniversityProgram {
+  id: number;
+  /**
+   * Group heading, e.g. "Commerce".
+   */
+  faculty: string;
+  /**
+   * Short name, e.g. "B.Com." or "PG Diploma".
+   */
+  code: string;
+  name: string;
+  /**
+   * Separate options with " / " or commas.
+   */
+  specialization?: string | null;
+  /**
+   * e.g. "6 semesters" or "6 months".
+   */
+  duration?: string | null;
+  eligibility?: string | null;
+  /**
+   * Internal reference only. Not shown on the website.
+   */
+  fees?: string | null;
+  /**
+   * Links this row to an existing course page ("Details"). Leave empty to mark it "New" with an Enquire button.
+   */
+  existingCourse?: (number | null) | Course;
+  order?: number | null;
+  showOnWebsite?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "testimonials".
  */
@@ -489,6 +530,10 @@ export interface PayloadLockedDocument {
         value: number | Course;
       } | null)
     | ({
+        relationTo: 'university-programs';
+        value: number | UniversityProgram;
+      } | null)
+    | ({
         relationTo: 'faculty';
         value: number | Faculty;
       } | null)
@@ -617,6 +662,24 @@ export interface CoursesSelect<T extends boolean = true> {
         id?: T;
       };
   faculty?: T;
+  order?: T;
+  showOnWebsite?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "university-programs_select".
+ */
+export interface UniversityProgramsSelect<T extends boolean = true> {
+  faculty?: T;
+  code?: T;
+  name?: T;
+  specialization?: T;
+  duration?: T;
+  eligibility?: T;
+  fees?: T;
+  existingCourse?: T;
   order?: T;
   showOnWebsite?: T;
   updatedAt?: T;
