@@ -19,7 +19,10 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SERVER_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000'),
+  ),
   title: { default: 'Jagriti Institute of Education', template: '%s | JIE' },
   description:
     'Hands-on IT, design, accounting and teaching courses, plus admission guidance from 10th to Ph.D. Shakarpur, near Laxmi Nagar Metro Gate 2, Delhi.',

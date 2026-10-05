@@ -4,6 +4,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import sharp from 'sharp'
 
 import { Users } from './collections/Users'
@@ -18,7 +19,13 @@ import { migrations } from './migrations'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const databaseUri = process.env.DATABASE_URI || ''
+// DATABASE_URI, or the variables Vercel's Neon integration sets automatically.
+const databaseUri = process.env.DATABASE_URI || process.env.DATABASE_URL || process.env.POSTGRES_URL || ''
+
+// Public address of the site. On Vercel this falls back to the production domain.
+const serverURL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')
 
 // Neon Postgres in every real environment. In development the schema is pushed
 // automatically; for production run `npm run migrate:create` then `npm run migrate` (see README).
@@ -33,7 +40,7 @@ const db = databaseUri.startsWith('file:')
     })
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || '',
+  serverURL,
   secret: process.env.PAYLOAD_SECRET || '',
   admin: {
     user: Users.slug,
@@ -54,4 +61,15 @@ export default buildConfig({
       })
     : undefined,
   sharp,
+  plugins: [
+    // Vercel's disk is temporary, so on Vercel photos and applicant documents are stored in Vercel Blob.
+    // Without BLOB_READ_WRITE_TOKEN (local development) files stay in the media/ and private-uploads/ folders.
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      // Random file names, so stored files cannot be guessed. Documents are still served only to signed-in staff.
+      addRandomSuffix: true,
+      collections: { media: true, documents: true },
+    }),
+  ],
 })

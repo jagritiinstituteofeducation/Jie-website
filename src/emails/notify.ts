@@ -75,7 +75,9 @@ export async function notifyNewLead(req: PayloadRequest, kind: LeadKind, doc: Le
     const staff = fromSettings.length
       ? fromSettings
       : (process.env.ADMIN_NOTIFY_EMAIL ?? '').split(',').map((s) => s.trim()).filter(Boolean)
-    const base = process.env.NEXT_PUBLIC_SERVER_URL ?? ''
+    const base =
+      process.env.NEXT_PUBLIC_SERVER_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')
     const adminUrl = `${base}/admin/collections/${KIND[kind].collection}/${doc.id ?? ''}`
 
     const jobs: Promise<unknown>[] = []
